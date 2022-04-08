@@ -152,6 +152,97 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-KMDF驱动开发（一）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/04/08/KMDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/">KMDF驱动开发（一）</a>
+    </h1>
+  
+
+        
+        <a href="/2022/04/08/KMDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/" class="archive-article-date">
+  	<time datetime="2022-04-08T02:05:37.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-04-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="KMDF下的Hello-World开发"><a href="#KMDF下的Hello-World开发" class="headerlink" title="KMDF下的Hello World开发"></a>KMDF下的Hello World开发</h1><h2 id="1-创建和生成驱动程序"><a href="#1-创建和生成驱动程序" class="headerlink" title="1 创建和生成驱动程序"></a>1 创建和生成驱动程序</h2><h3 id="1-1-创建一个空的KMDF项目"><a href="#1-1-创建一个空的KMDF项目" class="headerlink" title="1.1 创建一个空的KMDF项目"></a>1.1 创建一个空的KMDF项目</h3><p><img src="/2022-03-12-14-48-16.png"></p>
+<p>项目结构：</p>
+<p><img src="/2022-03-12-14-51-37.png"></p>
+<p>指定目标平台、SDK版本等信息</p>
+<p><img src="/2022-03-12-14-54-19.png"></p>
+<p>添加新项<code>Driver.c</code></p>
+<p><img src="/2022-03-12-14-57-26.png"></p>
+<h3 id="1-2-编写驱动程序代码"><a href="#1-2-编写驱动程序代码" class="headerlink" title="1.2 编写驱动程序代码"></a>1.2 编写驱动程序代码</h3><p>添加头文件</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;ntddk.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;wdf.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>声明回调函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DRIVER_INITIALIZE DriverEntry;</span><br><span class="line">EVT_WDF_DRIVER_DEVICE_ADD KmdfHelloWorldEvtDeviceAdd;</span><br></pre></td></tr></table></figure>
+
+<p>编写<code>DriverEntry</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">NTSTATUS </span><br><span class="line"><span class="title function_">DriverEntry</span><span class="params">(</span></span><br><span class="line"><span class="params">    _In_ PDRIVER_OBJECT     DriverObject, </span></span><br><span class="line"><span class="params">    _In_ PUNICODE_STRING    RegistryPath</span></span><br><span class="line"><span class="params">)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// NTSTATUS variable to record success or failure</span></span><br><span class="line">    NTSTATUS status = STATUS_SUCCESS;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Allocate the driver configuration object</span></span><br><span class="line">    WDF_DRIVER_CONFIG config;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Print &quot;Hello World&quot; for DriverEntry</span></span><br><span class="line">    KdPrintEx(( DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, <span class="string">&quot;KmdfHelloWorld: DriverEntry\n&quot;</span> ));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Initialize the driver configuration object to register the</span></span><br><span class="line">    <span class="comment">// entry point for the EvtDeviceAdd callback, KmdfHelloWorldEvtDeviceAdd</span></span><br><span class="line">    WDF_DRIVER_CONFIG_INIT(&amp;config, </span><br><span class="line">                           KmdfHelloWorldEvtDeviceAdd</span><br><span class="line">                           );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Finally, create the driver object</span></span><br><span class="line">    status = WdfDriverCreate(DriverObject, </span><br><span class="line">                             RegistryPath, </span><br><span class="line">                             WDF_NO_OBJECT_ATTRIBUTES, </span><br><span class="line">                             &amp;config, </span><br><span class="line">                             WDF_NO_HANDLE</span><br><span class="line">                             );</span><br><span class="line">    <span class="keyword">return</span> status;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>DriverEntry</code>是所有驱动程序的入口，类似于用户应用的<code>main()</code><br>初始化一个<code>NTSTATUS</code>变量<code>status</code><br>分配驱动程序配置对象<code>config</code><br>打印信息<code>KmdfHelloWorld: DriverEntry\n</code><br>初始化驱动程序配置对象为<code>EvtDeviceAdd callback</code>、<code>KmdfHelloWorldEvtDeviceAdd</code>注册入口<br>创建驱动对象</p>
+<p>编写<code>KmdfHelloWorldEvtDeviceAdd</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">NTSTATUS </span><br><span class="line"><span class="title function_">KmdfHelloWorldEvtDeviceAdd</span><span class="params">(</span></span><br><span class="line"><span class="params">    _In_    WDFDRIVER       Driver, </span></span><br><span class="line"><span class="params">    _Inout_ PWDFDEVICE_INIT DeviceInit</span></span><br><span class="line"><span class="params">)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// We&#x27;re not using the driver object,</span></span><br><span class="line">    <span class="comment">// so we need to mark it as unreferenced</span></span><br><span class="line">    UNREFERENCED_PARAMETER(Driver);</span><br><span class="line"></span><br><span class="line">    NTSTATUS status;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Allocate the device object</span></span><br><span class="line">    WDFDEVICE hDevice;    </span><br><span class="line"></span><br><span class="line">    <span class="comment">// Print &quot;Hello World&quot;</span></span><br><span class="line">    KdPrintEx(( DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, <span class="string">&quot;KmdfHelloWorld: KmdfHelloWorldEvtDeviceAdd\n&quot;</span> ));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Create the device object</span></span><br><span class="line">    status = WdfDeviceCreate(&amp;DeviceInit, </span><br><span class="line">                             WDF_NO_OBJECT_ATTRIBUTES,</span><br><span class="line">                             &amp;hDevice</span><br><span class="line">                             );</span><br><span class="line">    <span class="keyword">return</span> status;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>KmdfHelloWorldEvtDeviceAdd</code>中没有使用驱动程序对象，因此需要将其标记为未引用<br>初始化状态<code>status</code><br>分配设备对象<code>hDevice</code><br>打印<code>KmdfHelloWorld: KmdfHelloWorldEvtDeviceAdd\n</code><br>创建设备对象</p>
+<h3 id="1-3-生成驱动程序"><a href="#1-3-生成驱动程序" class="headerlink" title="1.3 生成驱动程序"></a>1.3 生成驱动程序</h3><p>设置<code>Debug x64</code></p>
+<p><img src="/2022-03-12-16-33-26.png"></p>
+<p>关闭<code>Wpp Tracing</code></p>
+<p><img src="/2022-03-12-16-32-43.png"></p>
+<p>生成驱动程序</p>
+<p><img src="/2022-03-12-16-36-25.png"></p>
+<h3 id="1-4-部署驱动程序"><a href="#1-4-部署驱动程序" class="headerlink" title="1.4 部署驱动程序"></a>1.4 部署驱动程序</h3><p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/windows-hardware/drivers/gettingstarted/provision-a-target-computer-wdk-8-1">远程调试驱动程序方法</a></p>
+<!-- TODO 官方通过远程调试部署驱动程序 -->
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/04/08/KMDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Markdown学习笔记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     

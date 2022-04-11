@@ -2,32 +2,6 @@
 <search> 
   
   
-    
-    <entry>
-      <title>二、WDF驱动开发——环境搭建</title>
-      <link href="/2022/04/11/%E4%BA%8C%E3%80%81WDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E2%80%94%E2%80%94%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"/>
-      <url>/2022/04/11/%E4%BA%8C%E3%80%81WDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E2%80%94%E2%80%94%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
-      
-        <content type="html"><![CDATA[<h1 id="二、WDF驱动开发——环境搭建"><a href="#二、WDF驱动开发——环境搭建" class="headerlink" title="二、WDF驱动开发——环境搭建"></a>二、WDF驱动开发——环境搭建</h1><p>前面简单介绍了一下<code>WDF</code>，那么进行<code>WDF</code>驱动开发之前，当然要先搭建好开发环境：</p><p>开发平台：<br>Windows 10 专业版<br>需要的工具：</p><ol><li>Visual Studio(至少是2017版本，我用的是VS2019)与SDK</li><li>WDK<span id="more"></span><h2 id="1-Visual-Studio"><a href="#1-Visual-Studio" class="headerlink" title="1. Visual Studio"></a>1. Visual Studio</h2>关于<code>Visual Studio</code>的安装，网上已经有很多详细的教程，这里就不再讲了，就说一下<code>Visual Studio</code>需要为<code>WDF</code>驱动开发做些什么准备工作。</li></ol><p>安装（已经安装过软件的可以打开<code>工具</code>-&gt;<code>获取工具和功能</code>，步骤相同）<code>Visual Studio</code>时，需要勾选<code>使用C++的桌面开发</code>工作负荷(如果需要开发对应的UWP应用，还要勾选<code>通用Windows平台开发</code>工作负荷，以及一些单个组件)。</p><p>在<code>使用C++的桌面开发</code>工作负荷中，默认包含了<code>Windows 10 SDK</code>，需要注意的是<code>SDK</code>和<code>MSVC</code>的版本。<br><code>SDK</code>版本显示在<code>Windows 10 SDK</code>后的括号内，示例图片中的版本为”10.0.19041.0”<br><code>MSVC</code>版本显示在<code>MSVC v14.....</code>后的括号内，示例图片中的版本为”最新”</p><p><img src="/2022-03-09-15-13-57.png"></p><p align="center">图1-1 VS 2019 驱动开发环境配置</p><details><summary>UWP应用开发环境</summary><p>在<code>通用Windows平台开发</code>工作负荷中，需要勾选对应版本的<code>C++通用Windows平台工具</code>。</p><p><img src="/2022-03-09-15-25-12.png"></p><p align="center">图1-2 VS 2019 UWP应用开发环境配置(1)</p><p>在单个组件中，根据MSVC版本，获取对应版本的<code>Spectre</code>缓解库和生成工具。</p><p><img src="/2022-03-09-15-17-21.png"></p><p align="center">图1-3 VS 2019 UWP应用开发环境配置(2)</p></details><h2 id="2-WDK"><a href="#2-WDK" class="headerlink" title="2. WDK"></a>2. WDK</h2><p>下载并安装与SDK对应版本的WDK(版本不对应则无法使用)<br><a href="https://docs.microsoft.com/zh-cn/windows-hardware/drivers/download-the-wdk">微软官方介绍</a></p><p>到这里，开发环境基本上就搭建完成了。</p>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>一、WDF驱动开发——基础介绍</title>
-      <link href="/2022/04/11/%E4%B8%80%E3%80%81WDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E2%80%94%E2%80%94%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/"/>
-      <url>/2022/04/11/%E4%B8%80%E3%80%81WDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E2%80%94%E2%80%94%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/</url>
-      
-        <content type="html"><![CDATA[<h1 id="一、WDF驱动开发——基础介绍"><a href="#一、WDF驱动开发——基础介绍" class="headerlink" title="一、WDF驱动开发——基础介绍"></a>一、WDF驱动开发——基础介绍</h1><p>由于工作的需要，最近开始学习<code>WDF</code>驱动程序的开发，在这里记录一下学习的进度。<br>那么我们首先要知道驱动是什么？<code>WDF</code>又是什么？</p><span id="more"></span><h2 id="1-什么是驱动程序？"><a href="#1-什么是驱动程序？" class="headerlink" title="1. 什么是驱动程序？"></a>1. 什么是驱动程序？</h2><p>就最基本的含义而言，驱动程序是一个软件组件，可以让操作系统和设备彼此通信。</p><p><img src="/2022-04-11-13-21-21.png"></p><p align="center">图1-1 应用程序、操作系统、驱动和设备间的通信</p><p>但是，并非是所有的驱动程序都是直接与设备通信的，它可能只是将I&#x2F;O请求传递给堆栈中较低的驱动程序，再由堆栈中较低的驱动程序去处理I&#x2F;O请求。</p><p><img src="/2022-04-11-13-33-16.png"></p><p align="center">图1-2 多个驱动参与的设备通信</p><p>当然，这个定义是对于一般驱动而言的，对于一些特殊驱动，如软件驱动、总线驱动和函数驱动，定义可能会有一些不同之处，目前先了解最基本的定义，后续遇到这些特殊驱动再做进一步研究吧。</p><h2 id="2-什么是WDF？"><a href="#2-什么是WDF？" class="headerlink" title="2. 什么是WDF？"></a>2. 什么是WDF？</h2><p>“<code>Windows Driver Foundation</code>（简称<code>WDF</code>），是微软公司所提供的驱动程序开发技术的集合，包括<code>Kernel-Mode Driver Framework</code>（核心模式驱动程序架构，<code>KMDF</code>）、<code>User-Mode Driver Framework</code>（用户模式驱动程序架构，<code>UMDF</code>）以及<code>PREfast plug-in for Drivers</code>（<code>PFD</code>），目的是要改善目前<code>Windows</code>平台的驱动程序品质，可支持<code>Windows 2000</code>、<code>Windows XP</code>、<code>Windows Server 2003</code>、<code>Windows Vista</code>、<code>Windows Server 2008</code>和 <code>Windows 7</code>，以及更新的操作系统上之最新驱动程序架构。<code>WDF</code>架构提供了异步输入输出、分层式驱动程序、随插即用（<code>PNP</code>）、电源管理（<code>Power Manager</code>），以及视窗管理规范（<code>Windows Management Instrumentation</code>，<code>WMI</code>）等功能。”</p><p align="right">——引用自百度百科</p><p><code>WDF</code>，全称<code>Windows Driver Framework</code>（也称<code>Windows Driver Foundation</code>），中文翻译为<code>Windows</code>驱动程序框架。它是在<code>WDM</code>框架发展而来的，可以简单的理解为对<code>WDM</code>的封装。</p><p><img src="/WDF%E6%9E%B6%E6%9E%84.png"></p><p align="center">图2-1 WDF架构图</p><p>这张图可能并不适用于所有的<code>WDF</code>驱动程序，但可以很好地帮助我们理解<code>WDF</code>驱动的基本框架。</p><p><strong>用户程序</strong>：获取设备句柄，通过<code>Windows API</code>向设备发送请求。<br><strong>内核子系统</strong>：内核子系统指<code>I/O manager</code>，<code>PnP manager</code>等，和<code>WDM</code>一样需要和<code>Driver</code>交互的子系统。<br><strong>WDF上边界</strong>：指<code>Windows</code>和<code>Driver</code>的边界，驱动可以调用<code>Framework DDI</code>，或者不通过<code>Framework</code>直接调用<code>Windows Functions</code>。<br><strong>框架对象</strong>：指<code>WDF</code>驱动的基本编译块，驱动通过<code>Interface</code>与对象交互，对象可以被框架或驱动创建。<br><strong>事件回调</strong>：由驱动实现及注册来覆盖<code>WDF</code>的默认处理，框架调用事件回调，向驱动传递数据，驱动处理后返回结果，必要时才需要事件回调。<br><strong>WDF下边界</strong>：指驱动与设备或其他驱动的边界，驱动可以通过<code>I/O Target</code>机制，向框架中的其他驱动传递请求并返回结果。<code>KMDF</code>通过<code>DMA object</code>向支持<code>DMA</code>的设备传递消息，<code>UMDF</code>通过<code>Framework</code>向相关内核级驱动传递请求从而与设备通信。</p><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ol><li><a href="https://docs.microsoft.com/zh-cn/windows-hardware/drivers/develop/getting-started-with-windows-drivers">《“Windows 驱动程序”入门》——Microsoft</a></li><li><a href="https://blog.csdn.net/cyx1231st/article/details/8630181">《chapter 4.4: WDF架构介绍》——cyx1231st</a></li><li>《Windows设备驱动程序WDF开发》——武安河</li></ol>]]></content>
-      
-      
-      
-    </entry>
-    
-    
   
   
 </search>

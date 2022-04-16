@@ -20,30 +20,39 @@
     var CONFIG = {"hostname":"www.aqian.club","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="从此福来心至，皆是逍遥">
-<meta property="og:type" content="website">
-<meta property="og:title" content="书签随笔">
-<meta property="og:url" content="http://www.aqian.club/index.html">
+  <meta name="description" content="Super I&#x2F;O——风扇控制风扇控制主要是通过对Super I&#x2F;O的相应寄存器进行读写操作实现的。 按照惯例，先来一段概念解释： “Super I&#x2F;O芯片也叫I&#x2F;O芯片。在486以上档次的主板上都有I&#x2F;O控制电路。因为在南桥这样的高速设备和串行、并行接口、软盘驱动器及键盘鼠标等大量低速设备之间必定存在资源的不匹配，而需要经过转换和管理。而Super I&#x2F;O芯片则完成了该功能。 通常在硬">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SuperI&#x2F;O——风扇控制">
+<meta property="og:url" content="http://www.aqian.club/2022/04/16/SuperI-O%E2%80%94%E2%80%94%E9%A3%8E%E6%89%87%E6%8E%A7%E5%88%B6/index.html">
 <meta property="og:site_name" content="书签随笔">
-<meta property="og:description" content="从此福来心至，皆是逍遥">
+<meta property="og:description" content="Super I&#x2F;O——风扇控制风扇控制主要是通过对Super I&#x2F;O的相应寄存器进行读写操作实现的。 按照惯例，先来一段概念解释： “Super I&#x2F;O芯片也叫I&#x2F;O芯片。在486以上档次的主板上都有I&#x2F;O控制电路。因为在南桥这样的高速设备和串行、并行接口、软盘驱动器及键盘鼠标等大量低速设备之间必定存在资源的不匹配，而需要经过转换和管理。而Super I&#x2F;O芯片则完成了该功能。 通常在硬">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://www.aqian.club/2022-04-16-16-07-23.png">
+<meta property="og:image" content="http://www.aqian.club/2022-04-16-17-11-24.png">
+<meta property="og:image" content="http://www.aqian.club/2022-04-16-16-56-37.png">
+<meta property="og:image" content="http://www.aqian.club/2022-04-16-17-12-12.png">
+<meta property="og:image" content="http://www.aqian.club/2022-04-16-17-09-22.png">
+<meta property="og:image" content="http://www.aqian.club/2022-04-16-17-15-06.png">
+<meta property="article:published_time" content="2022-04-16T09:29:42.000Z">
+<meta property="article:modified_time" content="2022-04-16T09:29:56.846Z">
 <meta property="article:author" content="阿谦">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://www.aqian.club/2022-04-16-16-07-23.png">
 
-<link rel="canonical" href="http://www.aqian.club/">
+<link rel="canonical" href="http://www.aqian.club/2022/04/16/SuperI-O%E2%80%94%E2%80%94%E9%A3%8E%E6%89%87%E6%8E%A7%E5%88%B6/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>书签随笔</title>
+  <title>SuperI/O——风扇控制 | 书签随笔</title>
   
 
 
@@ -163,74 +172,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.aqian.club/2022/04/11/%E5%BA%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpg">
-      <meta itemprop="name" content="阿谦">
-      <meta itemprop="description" content="从此福来心至，皆是逍遥">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="书签随笔">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/04/11/%E5%BA%8F/" class="post-title-link" itemprop="url">序</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-04-11 19:55:39 / 修改时间：23:29:15" itemprop="dateCreated datePublished" datetime="2022-04-11T19:55:39+08:00">2022-04-11</time>
-            </span>
-
-          
-
-        </div>
-      </header>
 
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote class="blockquote-center">
-            <i class="fa fa-quote-left"></i>
-            <p>你要做一个不动声色的大人了。</P>
-<p>去过自己另外的生活。</P>
-<p>不准情绪化，不准偷偷想念，不准回头看。</P>
-<p>你要听话，不是所有的鱼都会生活在同一片海里。</P>
-            <i class="fa fa-quote-right"></i>
-          </blockquote>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -246,10 +191,9 @@
       <meta itemprop="name" content="书签随笔">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/04/16/SuperI-O%E2%80%94%E2%80%94%E9%A3%8E%E6%89%87%E6%8E%A7%E5%88%B6/" class="post-title-link" itemprop="url">SuperI/O——风扇控制</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          SuperI/O——风扇控制
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -263,6 +207,13 @@
             </span>
 
           
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
 
         </div>
       </header>
@@ -273,7 +224,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Super-I-x2F-O——风扇控制"><a href="#Super-I-x2F-O——风扇控制" class="headerlink" title="Super I&#x2F;O——风扇控制"></a>Super I&#x2F;O——风扇控制</h1><p>风扇控制主要是通过对<code>Super I/O</code>的相应寄存器进行读写操作实现的。</p>
+        <h1 id="Super-I-x2F-O——风扇控制"><a href="#Super-I-x2F-O——风扇控制" class="headerlink" title="Super I&#x2F;O——风扇控制"></a>Super I&#x2F;O——风扇控制</h1><p>风扇控制主要是通过对<code>Super I/O</code>的相应寄存器进行读写操作实现的。</p>
 <p>按照惯例，先来一段概念解释：</p>
 <p>“<code>Super I/O</code>芯片也叫<code>I/O</code>芯片。在486以上档次的主板上都有<code>I/O</code>控制电路。因为在南桥这样的高速设备和串行、并行接口、软盘驱动器及键盘鼠标等大量低速设备之间必定存在资源的不匹配，而需要经过转换和管理。而<code>Super I/O</code>芯片则完成了该功能。</p>
 <p>通常在硬件监控芯片中会整合超级<code>I/O</code>功能，可用于监控受监控对象的电压、温度、转速等。主板在附件中会提供某种软件，它和主板上的硬件配合使用就能实现对电压、温度、风扇转速等的监控，一旦检测到这些参数超出设定的指标时，它会自动作出调整，以保护元件的安全。常见的温度控制芯片有<code>ADT7463</code>等等；通用的通用硬件监控芯片有<code>Winbond</code>的<code>W83697HF</code>和<code>W83627HF</code>，<code>SMSC</code>的<code>LPC47M172</code>，<code>ITE</code>的<code>IT8705F</code>、<code>IT8703F</code>，<code>ASUS</code>的<code>AS99172F</code>等等，这些芯片通常还整合了对于温度的监控需与温度传感元件配合；对风扇电机转速的监控，则需与<code>CPU</code>的散热风扇配合使用。”</p>
@@ -314,21 +265,30 @@
 <p>根据<strong>图2.2</strong>，索引<code>60h</code>值为<code>0Ah</code>，即<code>0000 1010</code></p>
 <h2 id="退出MB-PnP模式"><a href="#退出MB-PnP模式" class="headerlink" title="退出MB PnP模式"></a>退出<code>MB PnP</code>模式</h2><p>向特殊端口<code>2Eh</code>或<code>4Eh</code>的<code>02h</code>写入<code>02h</code>即可退出<code>MB PnP</code>模式</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">SetPortVal</span>(SIO_CONFIG_ADDRESS, <span class="number">0x02</span>);</span><br><span class="line"><span class="built_in">SetPortVal</span>(SIO_CONFIG_DATA, <span class="number">0x02</span>);</span><br></pre></td></tr></table></figure>
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/11/%E5%BA%8F/" rel="prev" title="序">
+      <i class="fa fa-chevron-left"></i> 序
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
@@ -381,6 +341,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Super-I-x2F-O%E2%80%94%E2%80%94%E9%A3%8E%E6%89%87%E6%8E%A7%E5%88%B6"><span class="nav-number">1.</span> <span class="nav-text">Super I&#x2F;O——风扇控制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E5%85%A5MB-PnP%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.1.</span> <span class="nav-text">进入MB PnP模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E5%AF%84%E5%AD%98%E5%99%A8%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="nav-number">1.2.</span> <span class="nav-text">修改配置寄存器中的数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E8%83%BDEC"><span class="nav-number">1.2.1.</span> <span class="nav-text">使能EC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96EC%E5%9F%BA%E5%9C%B0%E5%9D%80"><span class="nav-number">1.2.2.</span> <span class="nav-text">获取EC基地址</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%80%E5%87%BAMB-PnP%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.3.</span> <span class="nav-text">退出MB PnP模式</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

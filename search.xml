@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title>四、WDF驱动开发——驱动调试</title>
+      <link href="/2022/05/09/%E5%9B%9B%E3%80%81WDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E2%80%94%E2%80%94%E9%A9%B1%E5%8A%A8%E8%B0%83%E8%AF%95/"/>
+      <url>/2022/05/09/%E5%9B%9B%E3%80%81WDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E2%80%94%E2%80%94%E9%A9%B1%E5%8A%A8%E8%B0%83%E8%AF%95/</url>
+      
+        <content type="html"><![CDATA[<blockquote class="blockquote-center">            <i class="fa fa-quote-left"></i>            <p>驱动程序双机调试 </p>            <i class="fa fa-quote-right"></i>          </blockquote><h1 id="四、WDF驱动开发——驱动调试"><a href="#四、WDF驱动开发——驱动调试" class="headerlink" title="四、WDF驱动开发——驱动调试"></a>四、WDF驱动开发——驱动调试</h1><p>驱动程序的调试通常使用WinDbg或VS自带的驱动调试器实现双机调试，本章主要介绍WinDbg+虚拟机双机调试方法。</p><span id="more"></span><h2 id="WinDbg-虚拟机双机调试"><a href="#WinDbg-虚拟机双机调试" class="headerlink" title="WinDbg+虚拟机双机调试"></a>WinDbg+虚拟机双机调试</h2><p>WinDbg可用于调试内核代码和用户代码、分析故障转储以及在代码执行时检查CPU寄存器。<br>该工具包含在SDK中。<br><a href="https://docs.microsoft.com/zh-cn/windows-hardware/drivers/debugger/debugger-download-tools">下载地址</a></p><h3 id="虚拟机设置"><a href="#虚拟机设置" class="headerlink" title="虚拟机设置"></a>虚拟机设置</h3><ol><li>移除打印机（打印机会占用串口1），添加串行端口：<br><img src="/%E8%99%9A%E6%8B%9F%E6%9C%BA%E8%AE%BE%E7%BD%AE.png"></li><li>创建调试模式</li></ol><ul><li>以管理员身份启动PowerShell，通过命令<code>bcdedit /enum</code>查看启动配置：<br><img src="/%E5%90%AF%E5%8A%A8%E9%85%8D%E7%BD%AE.png"><br>依次执行以下命令：  <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bcdedit /<span class="built_in">set</span> <span class="string">&quot;&#123;current&#125;&quot;</span> bootmenupolicy Legacy</span><br><span class="line">bcdedit /dbgsettings SERIAL DEBUGPORT:<span class="number">1</span> BAUDRATE:<span class="number">115200</span></span><br><span class="line">bcdedit /<span class="built_in">copy</span> <span class="string">&quot;&#123;current&#125;&quot;</span> /d <span class="string">&quot;Debug&quot;</span> ;启动项名称可定义</span><br></pre></td></tr></table></figure>  <img src="/%E5%88%9B%E5%BB%BA%E8%B0%83%E8%AF%95%E5%90%AF%E5%8A%A8.png"><br>再次查看启动配置：<br><img src="/%E6%96%B0%E5%90%AF%E5%8A%A8%E9%85%8D%E7%BD%AE.png"></li><li>执行<code>bcdedit /debug &quot;&#123;新启动项identifier&#125;&quot; on</code>打开新启动项调试开关：<br><img src="/%E6%89%93%E5%BC%80%E8%B0%83%E8%AF%95%E5%BC%80%E5%85%B3.png"><br>查看启动配置<br><img src="/%E8%B0%83%E8%AF%95%E5%90%AF%E5%8A%A8%E9%85%8D%E7%BD%AE.png"></li><li>重启虚拟机验证设置：<br><img src="/%E9%AA%8C%E8%AF%81%E6%96%B0%E5%90%AF%E5%8A%A8%E9%A1%B9.png"><h3 id="WinDbg设置"><a href="#WinDbg设置" class="headerlink" title="WinDbg设置"></a>WinDbg设置</h3></li></ul><ol><li>创建WinDbg快捷方式</li></ol><ul><li>创建WinDbg快捷方式快速连接测试机，在目标后添加参数<code> -b -k com:pipe,port=\\.\pipe\com_1,resets=0,reconnect -y</code><br><img src="/WinDbg%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%E8%AE%BE%E7%BD%AE1.png"></li><li>点击”高级(D)…”，设置为管理员方式启动：<br><img src="/WinDbg%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%E8%AE%BE%E7%BD%AE2.png"></li></ul><ol start="2"><li>WinDbg连接</li></ol><ul><li>启动WinDbg快捷方式：<br><img src="/WinDbg%E7%AD%89%E5%BE%85%E8%BF%9E%E6%8E%A5.png"></li><li>重启Win10虚拟机，通过之前创建的新启动项启动：<br><img src="/WinDbg%E8%BF%9E%E6%8E%A5.png"><br>此时系统中断在Logo界面，WinDbg已成功与虚拟机连接</li><li>通过命令<code>g</code>使系统继续运行<br><img src="/%E7%BB%A7%E7%BB%AD%E8%BF%90%E8%A1%8C.png"></li></ul><ol start="3"><li>驱动调试</li></ol><ul><li>如果需要在WinDbg命令行输入命令而系统正在运行，需先将系统中断：<br><img src="/%E4%B8%AD%E6%96%AD%E7%B3%BB%E7%BB%9F.png"></li><li>在主机创建符号路径的环境变量：<br><img src="/%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F.png"></li><li>WinDbg中设置符号路径<code>.sympath D:\symbol;SRV*D:\symbol*http://msdl.microsoft.com/download/symbols</code>（路径可自定义），并重新加载（初次加载可能会下载许多符号文件）：<br><img src="/%E5%8A%A0%E8%BD%BD%E7%AC%A6%E5%8F%B7.png"></li><li>在测试机通过软件或代码加载驱动：<br><img src="/%E7%AC%AC%E4%B8%89%E6%96%B9%E8%BD%AF%E4%BB%B6%E5%86%85%E6%A0%B8%E9%A9%B1%E5%8A%A8%E7%AE%A1%E7%90%86%E5%99%A8.png"></li><li>安装驱动符号<br><img src="/%E5%AE%89%E8%A3%85%E9%A9%B1%E5%8A%A8%E7%AC%A6%E5%8F%B7.png"></li><li>添加源文件，并通过命令<code>bp 断点驱动程序源文件!断点函数</code>添加断点：<br><img src="/%E6%B7%BB%E5%8A%A0%E6%BA%90%E6%96%87%E4%BB%B61.png"><br><img src="/%E6%B7%BB%E5%8A%A0%E6%BA%90%E6%96%87%E4%BB%B62.png"><br><img src="/%E6%B7%BB%E5%8A%A0%E6%96%AD%E7%82%B9.png"></li><li>重新加载驱动，运行至断点时，WinDbg会自动打开源代码。此时可对驱动程序逐步调试：<br><img src="/%E4%BB%A3%E7%A0%81%E8%B0%83%E8%AF%95.png"></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 驱动 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> WDF </tag>
+            
+            <tag> 驱动 </tag>
+            
+            <tag> Driver </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>SuperI/O——风扇控制</title>
       <link href="/2022/04/16/SuperI-O%E2%80%94%E2%80%94%E9%A3%8E%E6%89%87%E6%8E%A7%E5%88%B6/"/>
       <url>/2022/04/16/SuperI-O%E2%80%94%E2%80%94%E9%A3%8E%E6%89%87%E6%8E%A7%E5%88%B6/</url>
@@ -31,6 +60,35 @@
     
     
     <entry>
+      <title>三、WDF驱动开发——HelloWorld</title>
+      <link href="/2022/04/12/%E4%B8%89%E3%80%81WDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E2%80%94%E2%80%94HelloWorld/"/>
+      <url>/2022/04/12/%E4%B8%89%E3%80%81WDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E2%80%94%E2%80%94HelloWorld/</url>
+      
+        <content type="html"><![CDATA[<blockquote class="blockquote-center">            <i class="fa fa-quote-left"></i>            <p>编写第一个WDF驱动程序 </p>            <i class="fa fa-quote-right"></i>          </blockquote><h1 id="三、WDF驱动开发——HelloWorld"><a href="#三、WDF驱动开发——HelloWorld" class="headerlink" title="三、WDF驱动开发——HelloWorld"></a>三、WDF驱动开发——HelloWorld</h1><p>在第二章中搭建好了WDF驱动开发环境，接下来尝试编写第一个WDF驱动程序。</p><span id="more"></span><h2 id="1-创建和生成驱动程序"><a href="#1-创建和生成驱动程序" class="headerlink" title="1 创建和生成驱动程序"></a>1 创建和生成驱动程序</h2><h3 id="1-1-创建一个空的KMDF项目"><a href="#1-1-创建一个空的KMDF项目" class="headerlink" title="1.1 创建一个空的KMDF项目"></a>1.1 创建一个空的KMDF项目</h3><p><img src="/2022-03-12-14-48-16.png"></p><p>项目结构：</p><p><img src="/2022-03-12-14-51-37.png"></p><p>指定目标平台、SDK版本等信息</p><p><img src="/2022-03-12-14-54-19.png"></p><p>添加新项<code>Driver.c</code></p><p><img src="/2022-03-12-14-57-26.png"></p><h3 id="1-2-编写驱动程序代码"><a href="#1-2-编写驱动程序代码" class="headerlink" title="1.2 编写驱动程序代码"></a>1.2 编写驱动程序代码</h3><p>在<code>Driver.c</code>中添加需要的头文件</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;ntddk.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;wdf.h&gt;</span></span></span><br></pre></td></tr></table></figure><p>声明入口例程与事件回调函数</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DRIVER_INITIALIZE DriverEntry;</span><br><span class="line">EVT_WDF_DRIVER_DEVICE_ADD KmdfHelloWorldEvtDeviceAdd;</span><br></pre></td></tr></table></figure><p>编写<code>DriverEntry</code></p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">NTSTATUS </span><br><span class="line"><span class="title function_">DriverEntry</span><span class="params">(</span></span><br><span class="line"><span class="params">    _In_ PDRIVER_OBJECT     DriverObject, </span></span><br><span class="line"><span class="params">    _In_ PUNICODE_STRING    RegistryPath</span></span><br><span class="line"><span class="params">)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// NTSTATUS variable to record success or failure</span></span><br><span class="line">    NTSTATUS status = STATUS_SUCCESS;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Allocate the driver configuration object</span></span><br><span class="line">    WDF_DRIVER_CONFIG config;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Print &quot;Hello World&quot; for DriverEntry</span></span><br><span class="line">    KdPrintEx(( DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, <span class="string">&quot;KmdfHelloWorld: DriverEntry\n&quot;</span> ));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Initialize the driver configuration object to register the</span></span><br><span class="line">    <span class="comment">// entry point for the EvtDeviceAdd callback, KmdfHelloWorldEvtDeviceAdd</span></span><br><span class="line">    WDF_DRIVER_CONFIG_INIT(&amp;config, </span><br><span class="line">                           KmdfHelloWorldEvtDeviceAdd</span><br><span class="line">                           );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Finally, create the driver object</span></span><br><span class="line">    status = WdfDriverCreate(DriverObject, </span><br><span class="line">                             RegistryPath, </span><br><span class="line">                             WDF_NO_OBJECT_ATTRIBUTES, </span><br><span class="line">                             &amp;config, </span><br><span class="line">                             WDF_NO_HANDLE</span><br><span class="line">                             );</span><br><span class="line">    <span class="keyword">return</span> status;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p><code>DriverEntry</code>是所有驱动程序的入口，类似于用户应用的<code>main()</code><br>初始化一个<code>NTSTATUS</code>变量<code>status</code><br>分配驱动程序配置对象<code>config</code><br>打印信息<code>KmdfHelloWorld: DriverEntry\n</code><br>初始化驱动程序配置对象，为<code>EvtDeviceAdd callback</code>、<code>KmdfHelloWorldEvtDeviceAdd</code>注册入口<br>最后创建驱动对象</p><p>编写<code>KmdfHelloWorldEvtDeviceAdd</code></p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">NTSTATUS </span><br><span class="line"><span class="title function_">KmdfHelloWorldEvtDeviceAdd</span><span class="params">(</span></span><br><span class="line"><span class="params">    _In_    WDFDRIVER       Driver, </span></span><br><span class="line"><span class="params">    _Inout_ PWDFDEVICE_INIT DeviceInit</span></span><br><span class="line"><span class="params">)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// We&#x27;re not using the driver object,</span></span><br><span class="line">    <span class="comment">// so we need to mark it as unreferenced</span></span><br><span class="line">    UNREFERENCED_PARAMETER(Driver);</span><br><span class="line"></span><br><span class="line">    NTSTATUS status;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Allocate the device object</span></span><br><span class="line">    WDFDEVICE hDevice;    </span><br><span class="line"></span><br><span class="line">    <span class="comment">// Print &quot;Hello World&quot;</span></span><br><span class="line">    KdPrintEx(( DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, <span class="string">&quot;KmdfHelloWorld: KmdfHelloWorldEvtDeviceAdd\n&quot;</span> ));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Create the device object</span></span><br><span class="line">    status = WdfDeviceCreate(&amp;DeviceInit, </span><br><span class="line">                             WDF_NO_OBJECT_ATTRIBUTES,</span><br><span class="line">                             &amp;hDevice</span><br><span class="line">                             );</span><br><span class="line">    <span class="keyword">return</span> status;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p><code>KmdfHelloWorldEvtDeviceAdd</code>中没有使用驱动程序对象，因此需要将其标记为未引用<br>初始化状态<code>status</code><br>分配设备对象<code>hDevice</code><br>打印<code>KmdfHelloWorld: KmdfHelloWorldEvtDeviceAdd\n</code><br>创建设备对象</p><h3 id="1-3-生成驱动程序"><a href="#1-3-生成驱动程序" class="headerlink" title="1.3 生成驱动程序"></a>1.3 生成驱动程序</h3><p>设置<code>Debug</code>，<code>KdPrintEx</code>是内核调试模式打印，如果不设置为<code>Debug</code>将无法打印信息。</p><p><img src="/2022-03-12-16-33-26.png"></p><p><code>WPP</code>软件跟踪通过添加简化跟踪提供程序的跟踪操作的方法来补充和增强 <code>WMI</code> 事件跟踪。<br>这是跟踪提供程序记录实时二进制消息的一种有效机制。<br>记录的消息随后可以转换为跟踪提供程序的操作的可读跟踪。<br>这里我们用<code>KdPrintEx</code>手动记录，所以关闭<code>Wpp Tracing</code></p><p><img src="/2022-03-12-16-32-43.png"></p><p>生成驱动程序</p><p><img src="/2022-03-12-16-36-25.png"></p><h3 id="1-4-部署驱动程序"><a href="#1-4-部署驱动程序" class="headerlink" title="1.4 部署驱动程序"></a>1.4 部署驱动程序</h3><p><a href="https://docs.microsoft.com/zh-cn/windows-hardware/drivers/gettingstarted/provision-a-target-computer-wdk-8-1">VS远程部署调试驱动程序方法</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 驱动 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> WDF </tag>
+            
+            <tag> 驱动 </tag>
+            
+            <tag> Driver </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>序</title>
       <link href="/2022/04/11/%E5%BA%8F/"/>
       <url>/2022/04/11/%E5%BA%8F/</url>
@@ -38,6 +96,64 @@
         <content type="html"><![CDATA[<blockquote class="blockquote-center">            <i class="fa fa-quote-left"></i>            <p>你要做一个不动声色的大人了。</P><p>去过自己另外的生活。</P><p>不准情绪化，不准偷偷想念，不准回头看。</P><p>你要听话，不是所有的鱼都会生活在同一片海里。</P>            <i class="fa fa-quote-right"></i>          </blockquote>]]></content>
       
       
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>二、WDF驱动开发——环境搭建</title>
+      <link href="/2022/04/11/%E4%BA%8C%E3%80%81WDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E2%80%94%E2%80%94%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"/>
+      <url>/2022/04/11/%E4%BA%8C%E3%80%81WDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E2%80%94%E2%80%94%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
+      
+        <content type="html"><![CDATA[<blockquote class="blockquote-center">            <i class="fa fa-quote-left"></i>            <p>如何搭建WDF驱动开发环境 </p>            <i class="fa fa-quote-right"></i>          </blockquote><h1 id="二、WDF驱动开发——环境搭建"><a href="#二、WDF驱动开发——环境搭建" class="headerlink" title="二、WDF驱动开发——环境搭建"></a>二、WDF驱动开发——环境搭建</h1><p>第一章简单介绍了一下<code>WDF</code>，那么进行<code>WDF</code>驱动开发之前，需要先搭建好开发环境：</p><p>开发平台：<br>Windows 10 专业版<br>需要的工具：</p><ol><li>Visual Studio(至少是2017版本，文中用的是VS2019)与SDK</li><li>WDK<span id="more"></span><h2 id="1-Visual-Studio"><a href="#1-Visual-Studio" class="headerlink" title="1. Visual Studio"></a>1. Visual Studio</h2>关于<code>Visual Studio</code>的安装，网上已经有很多详细的教程，这里暂且略过。<br>简单介绍一下<code>Visual Studio</code>需要为<code>WDF</code>驱动开发做些什么准备工作。</li></ol><p>安装（已经安装过软件的可以打开<code>工具</code>-&gt;<code>获取工具和功能</code>，步骤相同）<code>Visual Studio</code>时，需要勾选<code>使用C++的桌面开发</code>工作负荷(如果需要开发对应的UWP应用，还要勾选<code>通用Windows平台开发</code>工作负荷，以及一些单个组件)。</p><p>在<code>使用C++的桌面开发</code>工作负荷中，默认包含了<code>Windows 10 SDK</code>，需要注意的是<code>SDK</code>和<code>MSVC</code>的版本。<br><code>SDK</code>版本显示在<code>Windows 10 SDK</code>后的括号内，示例图片中的版本为”10.0.19041.0”<br><code>MSVC</code>版本显示在<code>MSVC v14.....</code>后的括号内，示例图片中的版本为”最新”</p><p><img src="/2022-03-09-15-13-57.png"></p><p align="center">图1-1 VS 2019 驱动开发环境配置</p><details><summary>UWP应用开发环境</summary><p>在<code>通用Windows平台开发</code>工作负荷中，需要勾选对应版本的<code>C++通用Windows平台工具</code>。</p><p><img src="/2022-03-09-15-25-12.png"></p><p align="center">图1-2 VS 2019 UWP应用开发环境配置(1)</p><p>在单个组件中，根据MSVC版本，获取对应版本的<code>Spectre</code>缓解库和生成工具。</p><p><img src="/2022-03-09-15-17-21.png"></p><p align="center">图1-3 VS 2019 UWP应用开发环境配置(2)</p></details><h2 id="2-WDK"><a href="#2-WDK" class="headerlink" title="2. WDK"></a>2. WDK</h2><p>下载并安装与SDK对应版本的WDK(版本不对应则无法使用)<br><a href="https://docs.microsoft.com/zh-cn/windows-hardware/drivers/download-the-wdk">微软官方介绍</a></p><p>至此，开发环境基本搭建完成。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 驱动 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> WDF </tag>
+            
+            <tag> 驱动 </tag>
+            
+            <tag> Driver </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>一、WDF驱动开发——基础介绍</title>
+      <link href="/2022/04/11/%E4%B8%80%E3%80%81WDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E2%80%94%E2%80%94%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/"/>
+      <url>/2022/04/11/%E4%B8%80%E3%80%81WDF%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E2%80%94%E2%80%94%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/</url>
+      
+        <content type="html"><![CDATA[<blockquote class="blockquote-center">            <i class="fa fa-quote-left"></i>            <p>简单介绍WDF框架 </p>            <i class="fa fa-quote-right"></i>          </blockquote><h1 id="一、WDF驱动开发——基础介绍"><a href="#一、WDF驱动开发——基础介绍" class="headerlink" title="一、WDF驱动开发——基础介绍"></a>一、WDF驱动开发——基础介绍</h1><p>学习知识，在最开始都是先对它的概念进行简单的了解。</p><span id="more"></span><h2 id="1-什么是驱动程序？"><a href="#1-什么是驱动程序？" class="headerlink" title="1. 什么是驱动程序？"></a>1. 什么是驱动程序？</h2><p>就最基本的含义而言，驱动程序是一个软件组件，可以让操作系统和设备彼此通信。</p><p><img src="/2022-04-11-13-21-21.png"></p><p align="center">图1-1 应用程序、操作系统、驱动和设备间的通信</p><p>但是，并非是所有的驱动程序都是直接与设备通信的，它可能只是将I&#x2F;O请求传递给堆栈中较低的驱动程序，再由堆栈中较低的驱动程序去处理I&#x2F;O请求。</p><p><img src="/2022-04-11-13-33-16.png"></p><p align="center">图1-2 多个驱动参与的设备通信</p><p>当然，这个定义是对于一般驱动而言的，对于一些特殊驱动，如软件驱动、总线驱动和函数驱动，定义可能会有一些不同之处，目前先了解最基本的定义，后续遇到这些特殊驱动再做进一步研究。</p><h2 id="2-什么是WDF？"><a href="#2-什么是WDF？" class="headerlink" title="2. 什么是WDF？"></a>2. 什么是WDF？</h2><p>“<code>Windows Driver Foundation</code>（简称<code>WDF</code>），是微软公司所提供的驱动程序开发技术的集合，包括<code>Kernel-Mode Driver Framework</code>（核心模式驱动程序架构，<code>KMDF</code>）、<code>User-Mode Driver Framework</code>（用户模式驱动程序架构，<code>UMDF</code>）以及<code>PREfast plug-in for Drivers</code>（<code>PFD</code>），目的是要改善目前<code>Windows</code>平台的驱动程序品质，可支持<code>Windows 2000</code>、<code>Windows XP</code>、<code>Windows Server 2003</code>、<code>Windows Vista</code>、<code>Windows Server 2008</code>和 <code>Windows 7</code>，以及更新的操作系统上之最新驱动程序架构。<code>WDF</code>架构提供了异步输入输出、分层式驱动程序、随插即用（<code>PNP</code>）、电源管理（<code>Power Manager</code>），以及视窗管理规范（<code>Windows Management Instrumentation</code>，<code>WMI</code>）等功能。”</p><p align="right">——引用自百度百科</p><p><code>WDF</code>，全称<code>Windows Driver Framework</code>（也称<code>Windows Driver Foundation</code>），中文翻译为<code>Windows</code>驱动程序框架。它是在<code>WDM</code>框架发展而来的，可以简单的理解为对<code>WDM</code>的封装。</p><p><img src="/WDF%E6%9E%B6%E6%9E%84.png"></p><p align="center">图2-1 WDF架构图</p><p><strong>用户程序</strong>：获取设备句柄，通过<code>Windows API</code>向设备发送请求。<br><strong>内核子系统</strong>：内核子系统指<code>I/O manager</code>，<code>PnP manager</code>等，和<code>WDM</code>一样需要和<code>Driver</code>交互的子系统。<br><strong>WDF上边界</strong>：指<code>Windows</code>和<code>Driver</code>的边界，驱动可以调用<code>Framework DDI</code>，或者不通过<code>Framework</code>直接调用<code>Windows Functions</code>。<br><strong>框架对象</strong>：指<code>WDF</code>驱动的基本编译块，驱动通过<code>Interface</code>与对象交互，对象可以被框架或驱动创建。<br><strong>事件回调</strong>：由驱动实现及注册来覆盖<code>WDF</code>的默认处理，框架调用事件回调，向驱动传递数据，驱动处理后返回结果，必要时才需要事件回调。<br><strong>WDF下边界</strong>：指驱动与设备或其他驱动的边界，驱动可以通过<code>I/O Target</code>机制，向框架中的其他驱动传递请求并返回结果。<code>KMDF</code>通过<code>DMA object</code>向支持<code>DMA</code>的设备传递消息，<code>UMDF</code>通过<code>Framework</code>向相关内核级驱动传递请求从而与设备通信。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 驱动 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> WDF </tag>
+            
+            <tag> 驱动 </tag>
+            
+            <tag> Driver </tag>
+            
+        </tags>
       
     </entry>
     
